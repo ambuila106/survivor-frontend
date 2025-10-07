@@ -3,23 +3,25 @@ import 'stat_card.dart';
 import 'penka_logo.dart';
 
 class HeaderBanner extends StatelessWidget {
-  final String survivorName;
-  final int lives;
-  final int totalLives;
-  final int position;
-  final int totalPlayers;
-  final int pot;
-  final int survivors;
+  final String title;
+  final int? lives;
+  final int? totalLives;
+  final int? position;
+  final int? totalPlayers;
+  final int? pot;
+  final int? survivors;
+  final bool isSimple;
 
   const HeaderBanner({
     super.key,
-    required this.survivorName,
-    required this.lives,
-    required this.totalLives,
-    required this.position,
-    required this.totalPlayers,
-    required this.pot,
-    required this.survivors,
+    required this.title,
+    this.lives,
+    this.totalLives,
+    this.position,
+    this.totalPlayers,
+    this.pot,
+    this.survivors,
+    this.isSimple = false,
   });
 
   @override
@@ -44,52 +46,53 @@ class HeaderBanner extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    survivorName.toUpperCase(),
+                    title.toUpperCase(),
                     style: const TextStyle(
                       fontFamily: 'LeagueGothic',
                       color: Colors.white,
                       fontSize: 50,
                       letterSpacing: 1.5,
-                      height: .7,
+                      height: .9,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      StatCard(
-                        value: '$lives/$totalLives',
-                        label: 'VIDAS',
-                        icon: Icons.favorite,
-                        iconColor: Colors.red,
-                        width: 75,
-                      ),
-                      StatCard(
-                        value: '$position/$totalPlayers',
-                        label: 'POSICIÓN',
-                        icon: Icons.emoji_events,
-                        iconColor: Colors.amber,
-                        width: 85,
-                      ),
-                      StatCard(
-                        value: '\$$pot',
-                        label: 'POZO ACUMULADO',
-                        icon: Icons.monetization_on,
-                        iconColor: Colors.green,
-                        width: 105,
-                      ),
-                      StatCard(
-                        value: '$survivors',
-                        label: 'SOBREVIVIENTES',
-                        icon: Icons.people,
-                        iconColor: Colors.blue,
-                        width: 105,
-                      ),
-                    ],
-                  ),
+                  if (!isSimple) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        StatCard(
+                          value: '${lives ?? 0}/${totalLives ?? 0}',
+                          label: 'VIDAS',
+                          icon: Icons.favorite,
+                          iconColor: Colors.red,
+                          width: 75,
+                        ),
+                        StatCard(
+                          value: '${position ?? 0}/${totalPlayers ?? 0}',
+                          label: 'POSICIÓN',
+                          icon: Icons.emoji_events,
+                          iconColor: Colors.amber,
+                          width: 85,
+                        ),
+                        StatCard(
+                          value: '\$${pot ?? 0}',
+                          label: 'POZO ACUMULADO',
+                          icon: Icons.monetization_on,
+                          iconColor: Colors.green,
+                          width: 105,
+                        ),
+                        StatCard(
+                          value: '${survivors ?? 0}',
+                          label: 'SOBREVIVIENTES',
+                          icon: Icons.people,
+                          iconColor: Colors.blue,
+                          width: 105,
+                        ),
+                      ],
+                    ),
+                  ],
                   const SizedBox(height: 10),
                   const PenkaLogo(),
                 ],

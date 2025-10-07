@@ -39,6 +39,7 @@ void pickTeam({
   required String matchId,
   required String teamId,
 }) async {
+  // Confirmación inicial
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
@@ -57,10 +58,10 @@ void pickTeam({
     ),
   );
 
-  // Si el usuario no confirma, salimos del método
   if (confirmed != true) return;
 
   try {
+    // Intentamos hacer la selección normal
     await ApiService.pickTeam(
       playerId: widget.playerId,
       survivorId: widget.survivorId,
@@ -69,18 +70,51 @@ void pickTeam({
       gameweekId: widget.gameweekId,
     );
 
+    // ✅ Si todo va bien, guardamos selección
     setState(() {
-      selectedTeamId = teamId; // guardamos local
-
-      // guardamos globalmente por survivor y jornada
+      selectedTeamId = teamId;
       globalSelectedTeams.putIfAbsent(widget.survivorId, () => {});
       globalSelectedTeams[widget.survivorId]![widget.gameweekId] = teamId;
     });
   } catch (e) {
-    print("Error al seleccionar equipo: $e");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error al seleccionar equipo: $e')),
-    );
+    final errorMessage = e.toString();
+    print('Error al seleccionar equipo: $errorMessage');
+
+    if (errorMessage.contains('Player not part of survivor')) {
+      final joinConfirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Unirse al Survivor'),
+          content: const Text(
+            'Aún no participas en este survivor. ¿Deseas unirte y realizar tu selección?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('No'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Sí, unirme'),
+            ),
+          ],
+        ),
+      );
+
+      if (joinConfirmed == true) {
+        try {
+          // 🔁 Llamamos a la API para unirse
+          await ApiService.joinSurvivor(widget.playerId, widget.survivorId);
+  
+        } catch (err) {
+          print('Error al unirse o seleccionar: $err');
+        }
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al seleccionar equipo: $errorMessage')),
+      );
+    }
   }
 }
 

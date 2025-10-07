@@ -27,22 +27,24 @@ class SurvivalScreen extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
+              if (!snapshot.hasError) {
+                final playerData = snapshot.data!['player'];
+                final survivorName = snapshot.data!['survivor'];
+
+                return HeaderBanner(
+                  title: survivorName,
+                  lives: playerData['lives'],
+                  totalLives: playerData['totalLives'],
+                  position: playerData['position'],
+                  totalPlayers: playerData['totalPlayers'],
+                  pot: playerData['pot'],
+                  survivors: playerData['survivors'],
+                );
+              } else {
+                return HeaderBanner(title: 'Survivor', isSimple: true);
               }
 
-              final playerData = snapshot.data!['player'];
-              final survivorName = snapshot.data!['survivor'];
 
-              return HeaderBanner(
-                survivorName: survivorName,
-                lives: playerData['lives'],
-                totalLives: playerData['totalLives'],
-                position: playerData['position'],
-                totalPlayers: playerData['totalPlayers'],
-                pot: playerData['pot'],
-                survivors: playerData['survivors'],
-              );
             },
           ),
 

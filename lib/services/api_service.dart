@@ -98,7 +98,7 @@ static Future<Map<String, dynamic>> getSurvivorWithMatches(String survivorId) as
 
     if (response.statusCode != 201) {
       print("Response body: ${response.body}");
-      throw Exception("Failed to pick team");
+      throw Exception(response.body);
     }
   }
 
