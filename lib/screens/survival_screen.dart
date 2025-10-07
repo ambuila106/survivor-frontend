@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/header_banner.dart';
-import '../components/match_accordion.dart';
+import '../components/match_accordion/match_accordion.dart';
 
 class SurvivalScreen extends StatelessWidget {
   const SurvivalScreen({super.key});
@@ -52,6 +52,12 @@ class SurvivalScreen extends StatelessWidget {
       }
     ];
 
+    final players = [
+      {'pos': 1, 'name': 'Brandon', 'vidas': 3},
+      {'pos': 2, 'name': 'Alice', 'vidas': 2},
+      {'pos': 3, 'name': 'Juan', 'vidas': 1},
+    ];
+
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -88,7 +94,35 @@ class SurvivalScreen extends StatelessWidget {
                   ),
 
                   const Center(child: Text('Resultados', style: TextStyle(color: Colors.white))),
-                  const Center(child: Text('Tabla', style: TextStyle(color: Colors.white))),
+
+                  Container(
+                    color: Colors.black,
+                    padding: const EdgeInsets.all(16),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: DataTable(
+                        headingTextStyle: const TextStyle(
+                          color: Colors.yellow,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        dataTextStyle: const TextStyle(
+                          color: Colors.white,
+                        ),
+                        columns: const [
+                          DataColumn(label: Text('Pos')),
+                          DataColumn(label: Text('Nombre')),
+                          DataColumn(label: Text('Vidas')),
+                        ],
+                        rows: players.map((player) {
+                          return DataRow(cells: [
+                            DataCell(Text(player['pos'].toString())),
+                            DataCell(Text(player['name'].toString())),
+                            DataCell(Text(player['vidas'].toString())),
+                          ]);
+                        }).toList(),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
