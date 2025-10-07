@@ -26,7 +26,7 @@ Survivor Frontend es una aplicación móvil desarrollada en Flutter que permite 
 
 1. **Clonar el repositorio:**
    ```bash
-   git clone <url-del-repositorio>
+   git clone https://github.com/ambuila106/survivor-frontend.git
    cd survivor_frontend
    ```
 
