@@ -1,64 +1,21 @@
 import 'package:flutter/material.dart';
 import '../components/header_banner.dart';
 import '../components/match_accordion/match_accordion.dart';
+import '../services/api_service.dart';
 import '../components/leaderboard_table.dart';
 
 class SurvivalScreen extends StatelessWidget {
-  const SurvivalScreen({super.key});
+  final String survivorId;
+  final String playerId;
+
+  const SurvivalScreen({
+    super.key,
+    required this.survivorId,
+    required this.playerId,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final matches = [
-      {
-        'home': 'Girona',
-        'away': 'Rayo Vallecano',
-        'homeFlag': 'assets/arg.png',
-        'awayFlag': 'assets/arg.png',
-        'time': '15 Ago 07:00',
-      },
-      {
-        'home': 'Mallorca',
-        'away': 'Barcelona',
-        'homeFlag': 'assets/arg.png',
-        'awayFlag': 'assets/arg.png',
-        'time': '15 Ago 07:00',
-      },
-      {
-        'home': 'Real Madrid',
-        'away': 'Athletic Club',
-        'homeFlag': 'assets/arg.png',
-        'awayFlag': 'assets/arg.png',
-        'time': '15 Ago 07:00',
-      },
-      {
-        'home': 'Valencia',
-        'away': 'Villarreal',
-        'homeFlag': 'assets/arg.png',
-        'awayFlag': 'assets/arg.png',
-        'time': '15 Ago 07:00',
-      },
-      {
-        'home': 'Sevilla',
-        'away': 'Atlético de Madrid',
-        'homeFlag': 'assets/arg.png',
-        'awayFlag': 'assets/arg.png',
-        'time': '15 Ago 07:00',
-      },
-      {
-        'home': 'Celta de Vigo',
-        'away': 'Real Sociedad',
-        'homeFlag': 'assets/arg.png',
-        'awayFlag': 'assets/arg.png',
-        'time': '15 Ago 07:00',
-      }
-    ];
-
-    final players = [
-      {'pos': 1, 'name': 'Brandon s', 'vidas': 3},
-      {'pos': 2, 'name': 'Alice', 'vidas': 2},
-      {'pos': 3, 'name': 'Juan', 'vidas': 1},
-    ];
-
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -72,11 +29,6 @@ class SurvivalScreen extends StatelessWidget {
               indicatorColor: Colors.yellow[700],
               labelColor: Colors.yellow[700],
               unselectedLabelColor: Colors.white,
-              labelStyle: const TextStyle(
-                fontSize: 14,
-                letterSpacing: 0,
-                fontWeight: FontWeight.bold,
-              ),
               tabs: const [
                 Tab(text: 'Por jugar'),
                 Tab(text: 'Resultados'),
@@ -86,17 +38,41 @@ class SurvivalScreen extends StatelessWidget {
             Expanded(
               child: TabBarView(
                 children: [
-                  ListView(
-                    children: [
-                      MatchAccordion(title: 'Jornada 1', matches: matches),
-                      MatchAccordion(title: 'Jornada 2', matches: matches),
-                      MatchAccordion(title: 'Jornada 3', matches: matches),
-                    ],
+                  FutureBuilder<Map<String, dynamic>>(
+                    future: ApiService.getSurvivorWithMatches(survivorId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      }
+
+                      final survivor = snapshot.data!;
+                      final gameweeks = survivor['gameweeks'] as List<dynamic>;
+
+                      return ListView.builder(
+                        itemCount: gameweeks.length,
+                        itemBuilder: (context, index) {
+                          final gw = gameweeks[index];
+                          final matches = (gw['matches'] as List<dynamic>)
+                              .map((m) => m as Map<String, dynamic>)
+                              .toList();
+
+                          return MatchAccordion(
+                            title: 'Jornada ${gw['number']}',
+                            matches: matches,
+                            survivorId: survivorId,
+                            playerId: playerId,
+                            gameweekId: gw['_id'],
+                          );
+                        },
+                      );
+                    },
                   ),
-
-                  const Center(child: Text('Resultados', style: TextStyle(color: Colors.white))),
-
-                  LeaderboardTable(survivorId: '68e3e1ac11685eb2571fc189'),
+                  const Center(
+                      child: Text('Resultados', style: TextStyle(color: Colors.white))),
+                  LeaderboardTable(survivorId: survivorId),
                 ],
               ),
             ),

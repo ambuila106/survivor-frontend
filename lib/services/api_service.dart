@@ -4,10 +4,11 @@ import 'package:http/http.dart' as http;
 class ApiService {
   static const String baseUrl = "https://unperfect-ulysses-lamprophonic.ngrok-free.dev/api";
 
-  static Future<List<dynamic>> getAllSurvivors() async {
+  static Future<List<Map<String, dynamic>>> getAllSurvivors() async {
     final response = await http.get(Uri.parse("$baseUrl/survivor/"));
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((e) => e as Map<String, dynamic>).toList();
     } else {
       throw Exception("Failed to load survivors");
     }
@@ -22,6 +23,19 @@ class ApiService {
       throw Exception("Failed to load survivor");
     }
   }
+
+  // ── Survivor ──
+static Future<Map<String, dynamic>> getSurvivorWithMatches(String survivorId) async {
+  final response = await http.get(Uri.parse("$baseUrl/survivor/$survivorId"));
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    // data contiene: _id, name, gameweeks, ...
+    return data;
+  } else {
+    throw Exception("Failed to load survivor");
+  }
+}
+
 
   static Future<Map<String, dynamic>> createPlayer(String name) async {
     final response = await http.post(
@@ -80,7 +94,10 @@ class ApiService {
       }),
     );
 
-    if (response.statusCode != 200) {
+    print("Response body: ${response.body}");
+
+    if (response.statusCode != 201) {
+      print("Response body: ${response.body}");
       throw Exception("Failed to pick team");
     }
   }
@@ -112,6 +129,16 @@ class ApiService {
       return leaderboard.map((e) => e as Map<String, dynamic>).toList();
     } else {
       throw Exception("Failed to load leaderboard");
+    }
+  }
+
+  static Future<Map<String, dynamic>> getPlayerSurvivorData(String survivorId, String playerId) async {
+    final response = await http.get(Uri.parse("$baseUrl/survivor/$survivorId/player/$playerId"));
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return data;
+    } else {
+      throw Exception("Failed to load player survivor data");
     }
   }
 

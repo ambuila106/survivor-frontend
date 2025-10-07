@@ -3,18 +3,21 @@ import 'team_selector.dart';
 
 class MatchTile extends StatelessWidget {
   final Map<String, dynamic> match;
-  final String? selectedTeam;
+  final String? selectedTeamId;
   final Function(String) onSelectTeam;
 
   const MatchTile({
     super.key,
     required this.match,
-    required this.selectedTeam,
+    required this.selectedTeamId,
     required this.onSelectTeam,
   });
 
   @override
   Widget build(BuildContext context) {
+    final homeTeam = match['home'] as Map<String, dynamic>;
+    final awayTeam = match['visitor'] as Map<String, dynamic>;
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 1),
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
@@ -24,13 +27,16 @@ class MatchTile extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Home Team
           TeamSelector(
-            teamName: match['home'],
-            flagPath: match['homeFlag'],
-            isSelected: selectedTeam == match['home'],
-            onTap: () => onSelectTeam(match['home']),
+            teamName: homeTeam['name'],
+            flagPath: homeTeam['flag'], // si tienes imagen local o emoji
+            isSelected: selectedTeamId == homeTeam['_id'],
+            onTap: () => onSelectTeam(homeTeam['_id']),
             isHome: true,
           ),
+
+          // Fecha/Hora del match
           SizedBox(
             width: 37,
             child: Column(
@@ -38,21 +44,23 @@ class MatchTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  match['date'] ?? '',
+                  match['date'] ?? '15 Ago', // opcional, o formatea de match['startDate']
                   style: const TextStyle(color: Colors.grey, fontSize: 11),
                 ),
                 Text(
-                  match['time'] ?? '',
+                  match['time'] ?? '17:00',
                   style: const TextStyle(color: Colors.grey, fontSize: 11),
                 ),
               ],
             ),
           ),
+
+          // Visitor Team
           TeamSelector(
-            teamName: match['away'],
-            flagPath: match['awayFlag'],
-            isSelected: selectedTeam == match['away'],
-            onTap: () => onSelectTeam(match['away']),
+            teamName: awayTeam['name'],
+            flagPath: awayTeam['flag'],
+            isSelected: selectedTeamId == awayTeam['_id'],
+            onTap: () => onSelectTeam(awayTeam['_id']),
             isHome: false,
           ),
         ],

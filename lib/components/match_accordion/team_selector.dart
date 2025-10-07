@@ -35,7 +35,7 @@ class TeamSelector extends StatelessWidget {
               isHome ? MainAxisAlignment.start : MainAxisAlignment.end,
           children: isHome
               ? [
-                  Image.asset(flagPath, width: 22, height: 22),
+                  Image.asset('assets/arg.png', width: 22, height: 22),
                   const SizedBox(width: 8),
                   Text(
                     teamName,
@@ -54,7 +54,7 @@ class TeamSelector extends StatelessWidget {
                         fontSize: 18),
                   ),
                   const SizedBox(width: 8),
-                  Image.asset(flagPath, width: 22, height: 22),
+                  Image.asset('assets/arg.png', width: 22, height: 22),
                 ],
         ),
       ),

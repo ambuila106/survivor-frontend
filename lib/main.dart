@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/survival_screen.dart';
+import 'screens/survivors_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,10 +10,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const String playerId = "68e48469112b41b9d0729f0e";
+
     return MaterialApp(
-      title: 'Survival App',
+      title: 'Survivor App',
       theme: ThemeData.dark(),
-      home: const SurvivalScreen(),
+      debugShowCheckedModeBanner: false,
+      home: SurvivorsScreen(playerId: playerId),
     );
   }
 }
