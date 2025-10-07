@@ -66,6 +66,7 @@ flutter:
   assets:
     - assets/stadium.png
     - assets/by_penka.png
+    - assets/arg.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
