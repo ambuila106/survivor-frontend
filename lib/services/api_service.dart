@@ -70,7 +70,7 @@ static Future<Map<String, dynamic>> getSurvivorWithMatches(String survivorId) as
       }),
     );
 
-    if (response.statusCode != 200) {
+    if (response.statusCode != 201) {
       throw Exception("Failed to join survivor");
     }
   }

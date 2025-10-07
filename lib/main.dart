@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const String playerId = "68e5807f651e6d0b43d626d7";
+    const String playerId = "68e5900a651e6d0b43d6299d";
 
     return MaterialApp(
       title: 'Survivor App',

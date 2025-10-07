@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import '../../services/api_service.dart';
 import 'match_tile.dart';
 
@@ -39,7 +40,6 @@ void pickTeam({
   required String matchId,
   required String teamId,
 }) async {
-  // Confirmación inicial
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
@@ -61,7 +61,6 @@ void pickTeam({
   if (confirmed != true) return;
 
   try {
-    // Intentamos hacer la selección normal
     await ApiService.pickTeam(
       playerId: widget.playerId,
       survivorId: widget.survivorId,
@@ -70,23 +69,32 @@ void pickTeam({
       gameweekId: widget.gameweekId,
     );
 
-    // ✅ Si todo va bien, guardamos selección
     setState(() {
       selectedTeamId = teamId;
       globalSelectedTeams.putIfAbsent(widget.survivorId, () => {});
       globalSelectedTeams[widget.survivorId]![widget.gameweekId] = teamId;
     });
+
+    Fluttertoast.showToast(
+      msg: "✅ Apuesta realizada correctamente",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.greenAccent.shade700,
+      textColor: Colors.white,
+      fontSize: 16,
+    );
   } catch (e) {
     final errorMessage = e.toString();
     print('Error al seleccionar equipo: $errorMessage');
 
     if (errorMessage.contains('Player not part of survivor')) {
+      // No mostramos error, solo el diálogo para unirse
       final joinConfirmed = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Unirse al Survivor'),
           content: const Text(
-            'Aún no participas en este survivor. ¿Deseas unirte y realizar tu selección?',
+            'Aún no participas en este survivor. ¿Deseas unirte para poder hacer apuestas?',
           ),
           actions: [
             TextButton(
@@ -103,21 +111,41 @@ void pickTeam({
 
       if (joinConfirmed == true) {
         try {
-          // 🔁 Llamamos a la API para unirse
           await ApiService.joinSurvivor(widget.playerId, widget.survivorId);
-  
+
+          Fluttertoast.showToast(
+            msg: "🎉 Te has unido al Survivor exitosamente",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.blueAccent,
+            textColor: Colors.white,
+            fontSize: 16,
+          );
         } catch (err) {
-          print('Error al unirse o seleccionar: $err');
+          print('Error al unirse: $err');
+          Fluttertoast.showToast(
+            msg: "❌ Error al unirse al Survivor",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.redAccent,
+            textColor: Colors.white,
+            fontSize: 16,
+          );
         }
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al seleccionar equipo: $errorMessage')),
+      // Solo otros errores sí muestran toast rojo
+      Fluttertoast.showToast(
+        msg: "❌ Error al seleccionar equipo",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        textColor: Colors.white,
+        fontSize: 16,
       );
     }
   }
 }
-
 
   @override
   Widget build(BuildContext context) {
