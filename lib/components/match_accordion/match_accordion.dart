@@ -35,33 +35,55 @@ class _MatchAccordionState extends State<MatchAccordion> {
     selectedTeamId = globalSelectedTeams[widget.survivorId]?[widget.gameweekId];
   }
 
-  void pickTeam({
-    required String matchId,
-    required String teamId,
-  }) async {
-    try {
-      await ApiService.pickTeam(
-        playerId: widget.playerId,
-        survivorId: widget.survivorId,
-        matchId: matchId,
-        teamId: teamId,
-        gameweekId: widget.gameweekId,
-      );
+void pickTeam({
+  required String matchId,
+  required String teamId,
+}) async {
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Confirmar selección'),
+      content: const Text('¿Estás seguro de que quieres cambiar tu apuesta?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('Sí, continuar'),
+        ),
+      ],
+    ),
+  );
 
-      setState(() {
-        selectedTeamId = teamId; // guardamos local
+  // Si el usuario no confirma, salimos del método
+  if (confirmed != true) return;
 
-        // guardamos globalmente por survivor y jornada
-        globalSelectedTeams.putIfAbsent(widget.survivorId, () => {});
-        globalSelectedTeams[widget.survivorId]![widget.gameweekId] = teamId;
-      });
-    } catch (e) {
-      print("Error al seleccionar equipo: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al seleccionar equipo: $e')),
-      );
-    }
+  try {
+    await ApiService.pickTeam(
+      playerId: widget.playerId,
+      survivorId: widget.survivorId,
+      matchId: matchId,
+      teamId: teamId,
+      gameweekId: widget.gameweekId,
+    );
+
+    setState(() {
+      selectedTeamId = teamId; // guardamos local
+
+      // guardamos globalmente por survivor y jornada
+      globalSelectedTeams.putIfAbsent(widget.survivorId, () => {});
+      globalSelectedTeams[widget.survivorId]![widget.gameweekId] = teamId;
+    });
+  } catch (e) {
+    print("Error al seleccionar equipo: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error al seleccionar equipo: $e')),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
