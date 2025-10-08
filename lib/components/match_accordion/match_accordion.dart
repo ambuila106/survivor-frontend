@@ -3,7 +3,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import '../../services/api_service.dart';
 import 'match_tile.dart';
 
-// Estado global: survivorId → (gameweekId → teamId)
 final Map<String, Map<String, String>> globalSelectedTeams = {};
 
 class MatchAccordion extends StatefulWidget {
@@ -27,12 +26,11 @@ class MatchAccordion extends StatefulWidget {
 }
 
 class _MatchAccordionState extends State<MatchAccordion> {
-  String? selectedTeamId; // selección de esta jornada
+  String? selectedTeamId;
 
   @override
   void initState() {
     super.initState();
-    // Cargar la selección guardada globalmente si existe
     selectedTeamId = globalSelectedTeams[widget.survivorId]?[widget.gameweekId];
   }
 
@@ -88,7 +86,6 @@ void pickTeam({
     print('Error al seleccionar equipo: $errorMessage');
 
     if (errorMessage.contains('Player not part of survivor')) {
-      // No mostramos error, solo el diálogo para unirse
       final joinConfirmed = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
@@ -134,7 +131,6 @@ void pickTeam({
         }
       }
     } else {
-      // Solo otros errores sí muestran toast rojo
       Fluttertoast.showToast(
         msg: "❌ Error al seleccionar equipo",
         toastLength: Toast.LENGTH_SHORT,

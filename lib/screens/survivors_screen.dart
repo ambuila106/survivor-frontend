@@ -14,7 +14,6 @@ class SurvivorsScreen extends StatelessWidget {
       backgroundColor: Colors.black,
       body: Column(
         children: [
-          // 🟡 Banner reutilizado
           SizedBox(
             height: 330,
             child: HeaderBanner(title: 'Survivors', isSimple: true),

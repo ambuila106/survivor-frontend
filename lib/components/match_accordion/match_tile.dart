@@ -27,16 +27,14 @@ class MatchTile extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Home Team
           TeamSelector(
             teamName: homeTeam['name'],
-            flagPath: homeTeam['flag'], // si tienes imagen local o emoji
+            flagPath: homeTeam['flag'],
             isSelected: selectedTeamId == homeTeam['_id'],
             onTap: () => onSelectTeam(homeTeam['_id']),
             isHome: true,
           ),
 
-          // Fecha/Hora del match
           SizedBox(
             width: 37,
             child: Column(
@@ -44,7 +42,7 @@ class MatchTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  match['date'] ?? '15 Ago', // opcional, o formatea de match['startDate']
+                  match['date'] ?? '15 Ago',
                   style: const TextStyle(color: Colors.grey, fontSize: 11),
                 ),
                 Text(
@@ -55,7 +53,6 @@ class MatchTile extends StatelessWidget {
             ),
           ),
 
-          // Visitor Team
           TeamSelector(
             teamName: awayTeam['name'],
             flagPath: awayTeam['flag'],

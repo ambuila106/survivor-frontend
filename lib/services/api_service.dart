@@ -24,12 +24,10 @@ class ApiService {
     }
   }
 
-  // ── Survivor ──
 static Future<Map<String, dynamic>> getSurvivorWithMatches(String survivorId) async {
   final response = await http.get(Uri.parse("$baseUrl/survivor/$survivorId"));
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
-    // data contiene: _id, name, gameweeks, ...
     return data;
   } else {
     throw Exception("Failed to load survivor");
@@ -124,7 +122,7 @@ static Future<Map<String, dynamic>> getSurvivorWithMatches(String survivorId) as
   static Future<List<Map<String, dynamic>>> getLeaderboard(String survivorId) async {
     final response = await http.get(Uri.parse("$baseUrl/leaderboard/$survivorId"));
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body); // Esto es un Map
+      final data = jsonDecode(response.body);
       final leaderboard = data['leaderboard'] as List<dynamic>;
       return leaderboard.map((e) => e as Map<String, dynamic>).toList();
     } else {
