@@ -20,7 +20,7 @@ class SurvivalScreen extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(250),
+          preferredSize: const Size.fromHeight(270),
           child: FutureBuilder<Map<String, dynamic>>(
             future: ApiService.getPlayerSurvivorData(survivorId, playerId),
             builder: (context, snapshot) {

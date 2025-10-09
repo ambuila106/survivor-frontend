@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import '../../services/api_service.dart';
+import 'match_selection_controller.dart';
 import 'match_tile.dart';
-
-final Map<String, Map<String, String>> globalSelectedTeams = {};
 
 class MatchAccordion extends StatefulWidget {
   final String title;
@@ -26,122 +23,26 @@ class MatchAccordion extends StatefulWidget {
 }
 
 class _MatchAccordionState extends State<MatchAccordion> {
+  late MatchSelectionController controller;
   String? selectedTeamId;
 
   @override
   void initState() {
     super.initState();
-    selectedTeamId = globalSelectedTeams[widget.survivorId]?[widget.gameweekId];
-  }
-
-void pickTeam({
-  required String matchId,
-  required String teamId,
-}) async {
-  final confirmed = await showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Confirmar selección'),
-      content: const Text('¿Estás seguro de que quieres cambiar tu apuesta?'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: const Text('Cancelar'),
-        ),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context, true),
-          child: const Text('Sí, continuar'),
-        ),
-      ],
-    ),
-  );
-
-  if (confirmed != true) return;
-
-  try {
-    await ApiService.pickTeam(
+    controller = MatchSelectionController(
       playerId: widget.playerId,
       survivorId: widget.survivorId,
-      matchId: matchId,
-      teamId: teamId,
       gameweekId: widget.gameweekId,
     );
+    selectedTeamId = controller.getSelectedTeam();
+  }
 
-    setState(() {
-      selectedTeamId = teamId;
-      globalSelectedTeams.putIfAbsent(widget.survivorId, () => {});
-      globalSelectedTeams[widget.survivorId]![widget.gameweekId] = teamId;
-    });
-
-    Fluttertoast.showToast(
-      msg: "✅ Apuesta realizada correctamente",
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.greenAccent.shade700,
-      textColor: Colors.white,
-      fontSize: 16,
-    );
-  } catch (e) {
-    final errorMessage = e.toString();
-    print('Error al seleccionar equipo: $errorMessage');
-
-    if (errorMessage.contains('Player not part of survivor')) {
-      final joinConfirmed = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Unirse al Survivor'),
-          content: const Text(
-            'Aún no participas en este survivor. ¿Deseas unirte para poder hacer apuestas?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('No'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Sí, unirme'),
-            ),
-          ],
-        ),
-      );
-
-      if (joinConfirmed == true) {
-        try {
-          await ApiService.joinSurvivor(widget.playerId, widget.survivorId);
-
-          Fluttertoast.showToast(
-            msg: "🎉 Te has unido al Survivor exitosamente",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.blueAccent,
-            textColor: Colors.white,
-            fontSize: 16,
-          );
-        } catch (err) {
-          print('Error al unirse: $err');
-          Fluttertoast.showToast(
-            msg: "❌ Error al unirse al Survivor",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.redAccent,
-            textColor: Colors.white,
-            fontSize: 16,
-          );
-        }
-      }
-    } else {
-      Fluttertoast.showToast(
-        msg: "❌ Error al seleccionar equipo",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        textColor: Colors.white,
-        fontSize: 16,
-      );
+  Future<void> handlePickTeam(String matchId, String teamId) async {
+    final success = await controller.pickTeam(context, matchId: matchId, teamId: teamId);
+    if (success) {
+      setState(() => selectedTeamId = teamId);
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -164,9 +65,7 @@ void pickTeam({
             return MatchTile(
               match: match,
               selectedTeamId: selectedTeamId,
-              onSelectTeam: (teamId) {
-                pickTeam(matchId: match['_id'], teamId: teamId);
-              },
+              onSelectTeam: (teamId) => handlePickTeam(match['_id'], teamId),
             );
           }).toList(),
         ),

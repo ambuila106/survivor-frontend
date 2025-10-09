@@ -26,6 +26,37 @@ class HeaderBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final stats = [
+      {
+        'value': '${lives ?? 0}/${totalLives ?? 0}',
+        'label': 'VIDAS',
+        'icon': Icons.favorite,
+        'color': Colors.red,
+        'width': 75.0,
+      },
+      {
+        'value': '${position ?? 0}/${totalPlayers ?? 0}',
+        'label': 'POSICIÓN',
+        'icon': Icons.emoji_events,
+        'color': Colors.amber,
+        'width': 85.0,
+      },
+      {
+        'value': '\$${pot ?? 0}',
+        'label': 'POZO ACUMULADO',
+        'icon': Icons.monetization_on,
+        'color': Colors.green,
+        'width': 105.0,
+      },
+      {
+        'value': '${survivors ?? 0}',
+        'label': 'SOBREVIVIENTES',
+        'icon': Icons.people,
+        'color': Colors.blue,
+        'width': 105.0,
+      },
+    ];
+
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -59,38 +90,23 @@ class HeaderBanner extends StatelessWidget {
                     ),
                   ),
                   if (!isSimple) ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        StatCard(
-                          value: '${lives ?? 0}/${totalLives ?? 0}',
-                          label: 'VIDAS',
-                          icon: Icons.favorite,
-                          iconColor: Colors.red,
-                          width: 75,
-                        ),
-                        StatCard(
-                          value: '${position ?? 0}/${totalPlayers ?? 0}',
-                          label: 'POSICIÓN',
-                          icon: Icons.emoji_events,
-                          iconColor: Colors.amber,
-                          width: 85,
-                        ),
-                        StatCard(
-                          value: '\$${pot ?? 0}',
-                          label: 'POZO ACUMULADO',
-                          icon: Icons.monetization_on,
-                          iconColor: Colors.green,
-                          width: 105,
-                        ),
-                        StatCard(
-                          value: '${survivors ?? 0}',
-                          label: 'SOBREVIVIENTES',
-                          icon: Icons.people,
-                          iconColor: Colors.blue,
-                          width: 105,
-                        ),
-                      ],
+                    const SizedBox(height: 10),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: stats
+                            .map(
+                              (stat) => StatCard(
+                                value: stat['value'] as String,
+                                label: stat['label'] as String,
+                                icon: stat['icon'] as IconData,
+                                iconColor: stat['color'] as Color,
+                                width: stat['width'] as double,
+                              ),
+                            )
+                            .toList(),
+                      ),
                     ),
                   ],
                   const SizedBox(height: 10),

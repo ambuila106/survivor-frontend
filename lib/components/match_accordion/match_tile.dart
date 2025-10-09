@@ -16,7 +16,7 @@ class MatchTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final homeTeam = match['home'] as Map<String, dynamic>;
-    final awayTeam = match['visitor'] as Map<String, dynamic>;
+    final visitorTeam = match['visitor'] as Map<String, dynamic>;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 1),
@@ -54,10 +54,10 @@ class MatchTile extends StatelessWidget {
           ),
 
           TeamSelector(
-            teamName: awayTeam['name'],
-            flagPath: awayTeam['flag'],
-            isSelected: selectedTeamId == awayTeam['_id'],
-            onTap: () => onSelectTeam(awayTeam['_id']),
+            teamName: visitorTeam['name'],
+            flagPath: visitorTeam['flag'],
+            isSelected: selectedTeamId == visitorTeam['_id'],
+            onTap: () => onSelectTeam(visitorTeam['_id']),
             isHome: false,
           ),
         ],
